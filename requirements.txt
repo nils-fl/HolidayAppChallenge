@@ -1,0 +1,11 @@
+dash
+dash-core-components
+dash-extensions
+dash-iconify
+dash-mantine-components
+groq
+gunicorn
+numpy
+pandas
+plotly==5.24.1
+python-dotenv
