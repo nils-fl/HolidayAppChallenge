@@ -182,8 +182,8 @@ def get_scatter(df:pd.DataFrame, n_daily, n_weekly, n_monthly, n_quarterly, n_ye
             ), row=1, col=1
         )
     fig.update_xaxes(title="date", row=3, col=1)
-    fig.update_yaxes(title="total riderships/trips", row=1, col=1)
-    fig.update_yaxes(title="total riderships/trips", row=2, col=1)
+    fig.update_yaxes(title="total ridership/trips", row=1, col=1)
+    fig.update_yaxes(title="total ridership/trips", row=2, col=1)
     fig.update_yaxes(title="% of comparable pre-pandemic day", row=3, col=1)
     fig.update_layout(
         title="Rides and Trips after the Pandemic",
