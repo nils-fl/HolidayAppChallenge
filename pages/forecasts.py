@@ -1,8 +1,8 @@
 import os
+from pathlib import Path
 
 import dash
 import dash_mantine_components as dmc
-import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -12,13 +12,14 @@ from dash_extensions.enrich import (Input, Output, Serverside, callback,
                                     no_update)
 from dotenv import load_dotenv
 from groq import Groq
-from sklearn.metrics import mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
-from statsforecast import StatsForecast
-from statsforecast.models import AutoCES
-
+from sklearn.metrics import (mean_absolute_error,
+                             mean_absolute_percentage_error,
+                             mean_squared_error)
 from sktime.forecasting.chronos import ChronosForecaster
 from sktime.forecasting.compose import BaggingForecaster
 from sktime.transformations.bootstrap import STLBootstrapTransformer
+from statsforecast import StatsForecast
+from statsforecast.models import AutoCES
 
 from modules.helpers import *
 
@@ -89,21 +90,24 @@ def get_scatter(df:pd.DataFrame, stats_clicks, type_select):
     rmse = "run model first"
     
     if ctx.triggered_id == "stats-forecast-btn":
+        ces_path = Path("data/ces.csv")
+        if not ces_path.exists():
+            season_length = 365
+            horizon = HORIZON
 
-        season_length = 365
-        horizon = HORIZON
+            sf = StatsForecast(
+                models=[AutoCES(season_length=season_length)],
+                freq="1d", 
+                n_jobs=1,
+            )
 
-        sf = StatsForecast(
-            models=[AutoCES(season_length=season_length)],
-            freq="1d", 
-            n_jobs=1,
-        )
-
-        sf.fit(df_train)
-        df_pred = sf.predict(h=horizon, level=[95])
+            sf.fit(df_train)
+            df_pred = sf.predict(h=horizon, level=[95])
+            df_pred.to_csv(ces_path)
+        else:
+            df_pred = pd.read_csv(ces_path)
 
         model = "CES"
-        
         fig.add_trace(
             go.Scatter(
                 x=df_pred.ds,
@@ -194,19 +198,24 @@ def get_scatter(df:pd.DataFrame, ttm_clicks, type_select):
     rmse = "run model first"
     
     if ctx.triggered_id == "chronos-forecast-btn":
+        chronos_path = Path("data/chronos.csv")
+        if not chronos_path.exists():
+            base = ChronosForecaster(model_path="amazon/chronos-t5-tiny")
+            model = BaggingForecaster(STLBootstrapTransformer(n_series=3, sp=365), base)
 
-        base = ChronosForecaster(model_path="amazon/chronos-t5-tiny")
-        model = BaggingForecaster(STLBootstrapTransformer(n_series=3, sp=365), base)
+            base.fit(y=df_train.y.values, fh=range(1, HORIZON+1))
+            model.fit(y=df_train.y.values, fh=range(1, HORIZON+1))
+
+            df_test["preds"] = base.predict(fh=range(1, HORIZON+1)).ravel()
+            interval = model.predict_interval(fh=range(1, HORIZON+1), coverage=0.95)
+            df_test["upper"] = interval[0][0.95]["upper"]
+            df_test["lower"] = interval[0][0.95]["lower"]
+
+            df_test.to_csv(chronos_path)
+        else:
+            df_test = pd.read_csv(chronos_path)
+
         model_name = "chronos"
-
-        base.fit(y=df_train.y.values, fh=range(1, HORIZON+1))
-        model.fit(y=df_train.y.values, fh=range(1, HORIZON+1))
-
-        df_test["preds"] = base.predict(fh=range(1, HORIZON+1)).ravel()
-        interval = model.predict_interval(fh=range(1, HORIZON+1), coverage=0.95)
-        df_test["upper"] = interval[0][0.95]["upper"]
-        df_test["lower"] = interval[0][0.95]["lower"]
-
         fig.add_trace(
             go.Scatter(
                 x=df_test.ds,
