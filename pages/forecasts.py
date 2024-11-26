@@ -90,7 +90,7 @@ def get_scatter(df:pd.DataFrame, stats_clicks, type_select):
     rmse = "run model first"
     
     if ctx.triggered_id == "stats-forecast-btn":
-        ces_path = Path("data/ces.csv")
+        ces_path = Path(f"data/ces_{type_select}.csv")
         if not ces_path.exists():
             season_length = 365
             horizon = HORIZON
@@ -198,13 +198,15 @@ def get_scatter(df:pd.DataFrame, ttm_clicks, type_select):
     rmse = "run model first"
     
     if ctx.triggered_id == "chronos-forecast-btn":
-        chronos_path = Path("data/chronos.csv")
+        chronos_path = Path(f"data/chronos_{type_select}.csv")
         if not chronos_path.exists():
             base = ChronosForecaster(model_path="amazon/chronos-t5-tiny")
-            model = BaggingForecaster(STLBootstrapTransformer(n_series=3, sp=365), base)
+            model = BaggingForecaster(STLBootstrapTransformer(), base)
 
-            base.fit(y=df_train.y.values, fh=range(1, HORIZON+1))
-            model.fit(y=df_train.y.values, fh=range(1, HORIZON+1))
+            y = df_train.y.values
+
+            base.fit(y=y, fh=range(1, HORIZON+1))
+            model.fit(y=y, fh=range(1, HORIZON+1))
 
             df_test["preds"] = base.predict(fh=range(1, HORIZON+1)).ravel()
             interval = model.predict_interval(fh=range(1, HORIZON+1), coverage=0.95)
