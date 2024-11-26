@@ -33,7 +33,7 @@ dash.register_page(
 
 
 ######################################################################
-# Pies
+# Stats Forecast
 ######################################################################
 
 @callback(
@@ -138,6 +138,10 @@ def get_scatter(df:pd.DataFrame, stats_clicks, type_select):
     return dcc.Graph(figure=fig, style={"width": "100%"}), mean, mae, mape, rmse
 
 ######################################################################
+# Neural Forecast
+######################################################################
+
+######################################################################
 # Layout
 ######################################################################
 
@@ -168,78 +172,82 @@ layout = html.Div([
     dmc.Space(h=20),
     html.Div(id="stats-forecasts-div"),
     dmc.Space(h=20),
-    dmc.Group([
+    dmc.Flex([
         dmc.Card([
-            dmc.Group(
+            dmc.Stack(
                 [
+                    dmc.Badge("Data", color="pink"),
                     dmc.Text("Mean Daily Ridership", fw=500),
+                    dmc.Text(
+                        id="stats-mean",
+                        size="sm",
+                        c="dimmed",
+                        ta="left",
+                    ),
                 ],
-                justify="flex-start",
+                align="flex-start",
+                justify="space-between",
                 mt="md",
                 mb="xs",
             ),
-            dmc.Text(
-                id="stats-mean",
-                size="sm",
-                c="dimmed",
-                ta="left",
-            ),
-        ]),
+        ], w="100%"),
         dmc.Card([
-            dmc.Group(
+            dmc.Stack(
                 [
-                    dmc.Text("Mean Absolute Error", fw=500),
                     dmc.Badge("MAE", color="pink"),
+                    dmc.Text("Mean Absolute Error", fw=500),
+                    dmc.Text(
+                        id="stats-mae",
+                        size="sm",
+                        c="dimmed",
+                        ta="left",
+                    ),
                 ],
-                justify="flex-start",
+                align="flex-start",
+                justify="space-between",
                 mt="md",
                 mb="xs",
             ),
-            dmc.Text(
-                id="stats-mae",
-                size="sm",
-                c="dimmed",
-                ta="left",
-            ),
-        ]),
+        ], w="100%"),
         dmc.Card([
-            dmc.Group(
+            dmc.Stack(
                 [
-                    dmc.Text("Mean Absolute Percentage Error", fw=500),
                     dmc.Badge("MAPE", color="pink"),
+                    dmc.Text("Mean Absolute Percentage Error", fw=500),
+                    dmc.Text(
+                        id="stats-mape",
+                        size="sm",
+                        c="dimmed",
+                        ta="left",
+                    ),
                 ],
-                justify="flex-start",
+                align="flex-start",
+                justify="space-between",
                 mt="md",
                 mb="xs",
             ),
-            dmc.Text(
-                id="stats-mape",
-                size="sm",
-                c="dimmed",
-                ta="left",
-            ),
-        ]),
+        ], w="100%"),
         dmc.Card([
-            dmc.Group(
+            dmc.Stack(
                 [
-                    dmc.Text("Root Mean Squared Error", fw=500),
                     dmc.Badge("rmse", color="pink"),
+                    dmc.Text("Root Mean Squared Error", fw=500),
+                    dmc.Text(
+                        id="stats-rmse",
+                        size="sm",
+                        c="dimmed",
+                        ta="left",
+                    ),
                 ],
-                justify="flex-start",
+                align="flex-start",
+                justify="space-between",
                 mt="md",
                 mb="xs",
             ),
-            dmc.Text(
-                id="stats-rmse",
-                size="sm",
-                c="dimmed",
-                ta="left",
-            ),
-        ]),
+        ], w="100%"),
     ],
-    gap="md",
-    align="flex-start",
-    justify="space-between",
-    grow=True
+    direction={"base": "column", "sm": "row"},
+    gap={"base": "sm", "sm": "lg"},
+    justify={"sm": "space-between"},
     )
 ])

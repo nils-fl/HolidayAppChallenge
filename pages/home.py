@@ -70,10 +70,10 @@ def update_analytics_graph(df:pd.DataFrame):
                     className="stats-card"
                 ) for k in docs.keys()
             ],
-            direction={"base": "column", "md": "row"},
-            align="center",
-            gap="md",
-            justify="space-between")
+            direction={"base": "column", "lg": "row"},
+            gap={"base": "sm", "sm": "md"},
+            justify={"sm": "space-between"},
+            )
     return cards
 
 ######################################################################
@@ -106,7 +106,11 @@ def get_scatter(df:pd.DataFrame, n_daily, n_weekly, n_monthly, n_quarterly, n_ye
         rows=3,
         cols=1,
         shared_xaxes=True,
-        # row_heights=[0.8, 0.2],
+        subplot_titles=[
+            "Total Separate",
+            "Total Stacked",
+            "Total Percent Compared to Pre-Pandemic",
+        ]
     )
     mean_y = df["Subways: Total Estimated Ridership"].mean()
     df_events = pd.DataFrame([
@@ -186,20 +190,17 @@ def get_scatter(df:pd.DataFrame, n_daily, n_weekly, n_monthly, n_quarterly, n_ye
     fig.update_yaxes(title="total ridership/trips", row=2, col=1)
     fig.update_yaxes(title="% of comparable pre-pandemic day", row=3, col=1)
     fig.update_layout(
-        title="Rides and Trips after the Pandemic",
-        title_x=0.5,
         height=1200,
         showlegend=True,
         legend=dict(
             orientation="h",
             yanchor="bottom",
-            y=-0.2,
+            y=-0.15,
             xanchor="right",
             x=1
         ),
         hovermode="x unified",
     )
-    
     return dcc.Graph(figure=fig, style={"width": "100%"})
 
 

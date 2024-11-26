@@ -112,19 +112,23 @@ def get_scatter(df:pd.DataFrame):
         title="Share of Rides and Trips",
         title_x=0.5,
         title_y=0.95,
+        legend=dict(
+            # orientation="h",
+            yanchor="bottom",
+            y=1.01,
+            xanchor="right",
+            x=1
+        ),
     )
 
     flex = dmc.Flex([
             dcc.Graph(figure=pie_then, style={"width": "100%"}),
-            dmc.Space(w=20),
             dcc.Graph(figure=pie_now, style={"width": "100%"}),
-            dmc.Space(w=20),
             dcc.Graph(figure=dots, style={"width": "100%"}),
         ],
-        gap="md",
-        align="flex-start",
-        justify="flex-start",
-        direction="row"
+        direction={"base": "column", "xl": "row"},
+        gap={"base": "sm", "sm": "md"},
+        justify={"sm": "space-between"},
     )
     return flex
 
