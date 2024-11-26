@@ -7,7 +7,9 @@ groq
 gunicorn
 numpy
 pandas
-plotly==5.24.1
+plotly
 python-dotenv
 statsforecast
 scikit-learn
+sktime
+accelerate

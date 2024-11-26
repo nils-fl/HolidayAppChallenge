@@ -37,38 +37,60 @@ dash.register_page(
     )
 def update_analytics_graph(df:pd.DataFrame):
     total = df[[c for c in df.columns if "Total" in c]].sum().sum()
+
     total_subway = df["Subways: Total Estimated Ridership"].sum()
+    min_subway = df["Subways: % of Comparable Pre-Pandemic Day"].min()
+    max_subway = df[-200:]["Subways: % of Comparable Pre-Pandemic Day"].max()
+    
     total_bus = df["Buses: Total Estimated Ridership"].sum()
+    min_bus = df["Buses: % of Comparable Pre-Pandemic Day"].min()
+    max_bus = df[-200:]["Buses: % of Comparable Pre-Pandemic Day"].max()
+
     total_lirr = df["LIRR: Total Estimated Ridership"].sum()
+    min_lirr = df["LIRR: % of Comparable Pre-Pandemic Day"].min()
+    max_lirr = df[-200:]["LIRR: % of Comparable Pre-Pandemic Day"].max()
+
     total_metro = df["Metro-North: Total Estimated Ridership"].sum()
+    min_metro = df["Metro-North: % of Comparable Pre-Pandemic Day"].min()
+    max_metro = df[-200:]["Metro-North: % of Comparable Pre-Pandemic Day"].max()
+
     total_aride = df["Access-A-Ride: Total Scheduled Trips"].sum()
+    min_aride = df["Access-A-Ride: % of Comparable Pre-Pandemic Day"].min()
+    max_aride = df[-200:]["Access-A-Ride: % of Comparable Pre-Pandemic Day"].max()
+
     total_bridges = df["Bridges and Tunnels: Total Traffic"].sum()
+    min_bridges = df["Bridges and Tunnels: % of Comparable Pre-Pandemic Day"].min()
+    max_bridges = df[-200:]["Bridges and Tunnels: % of Comparable Pre-Pandemic Day"].max()
+
     total_rail = df["Staten Island Railway: Total Estimated Ridership"].sum()
+    min_rail = df["Staten Island Railway: % of Comparable Pre-Pandemic Day"].min()
+    max_rail = df[-200:]["Staten Island Railway: % of Comparable Pre-Pandemic Day"].max()
+
     docs = {
         "Total": [total, "traffic-light"],
-        "Subways": [total_subway, "train"],
-        "Buses": [total_bus, "bus"],
-        "LIRR": [total_lirr, "train"],
-        "Metro-North": [total_metro, "metro"],
-        "A-RIDE": [total_aride, "car"],
-        "Bridges & Tunnels": [total_bridges, "bridge"],
-        "Staten Island Railway": [total_rail, "train-car"],
+        "Subways": [total_subway, "train", min_subway, max_subway],
+        "Buses": [total_bus, "bus", min_bus, max_bus],
+        "LIRR": [total_lirr, "train", min_lirr, max_lirr],
+        "Metro-North": [total_metro, "metro", min_metro, max_metro],
+        "A-RIDE": [total_aride, "car", min_aride, max_aride],
+        "Bridges & Tunnels": [total_bridges, "bridge", min_bridges, max_bridges],
+        "Staten Island Railway": [total_rail, "train-car", min_rail, max_rail],
     }
     docs = {k: v for k, v in sorted(docs.items(), key=lambda x: x[1][0], reverse=True)}
     cards = dmc.Flex([
                 dmc.Card(
                     children=[
-                        dmc.Center(
-                            dmc.Flex([
-                                DashIconify(icon=f"mdi:{docs[k][1]}", height=30),
-                            ])
-                        ),
-                        dmc.Text(k),
+                        dmc.Center(DashIconify(icon=f"mdi:{docs[k][1]}", height=30)),
+                        dmc.Text(k, fw=700, h=15),
                         html.Hr(className="stats-card-hr"),
-                        dmc.Text(f"{docs[k][0]:,.0f}", fw=700, h=15)
+                        dmc.Text(f"Total: {docs[k][0]:,.0f}", fw=500, h=15),
+                        dmc.Space(h=10),
+                        dmc.Text(f"Min: {docs[k][2] * 100:,.2f} %" if i>0 else "", fw=500, h=15),
+                        dmc.Space(h=10),
+                        dmc.Text(f"Max: {docs[k][3] * 100:,.2f} %" if i>0 else "", fw=500, h=15),
                         ],
                     className="stats-card"
-                ) for k in docs.keys()
+                ) for i,k in enumerate(docs.keys())
             ],
             direction={"base": "column", "lg": "row"},
             gap={"base": "sm", "sm": "md"},
