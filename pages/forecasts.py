@@ -338,6 +338,26 @@ def get_forecast_metric_cards(model):
         justify={"sm": "space-between"},
         )
 
+@callback(
+    Output("stats-info-modal", "opened"),
+    Input("stats-info-btn", "n_clicks"),
+    prevent_initial_call=True,
+)
+def open_stats_info_modal(n_clicks):
+    if n_clicks > 0:
+        return True
+    return False
+
+@callback(
+    Output("chronos-info-modal", "opened"),
+    Input("chronos-info-btn", "n_clicks"),
+    prevent_initial_call=True,
+)
+def open_chronos_info_modal(n_clicks):
+    if n_clicks > 0:
+        return True
+    return False
+
 ######################################################################
 # Layout
 ######################################################################
@@ -368,18 +388,36 @@ layout = html.Div([
     dmc.Space(h=20),
 
     # stats
+    dmc.Group([
+        dmc.Button("Complex Exponential Smoothing", id="stats-forecast-btn", n_clicks=0, variant="outline"),
+        dmc.Button("Info", id="stats-info-btn", n_clicks=0, variant="outline", color="black"),
+    ]),
+    dmc.Modal(id="stats-info-modal", title="Complex Exponential Smoothing", children=[
+        html.P("Complex Exponential Smoothing (CES) is an advanced forecasting method that extends traditional exponential smoothing techniques. "
+               "Unlike standard methods, CES uses complex numbers to model time series data, allowing it to capture both stationary and non-stationary "
+               "processes without requiring explicit level or trend components. This makes CES more flexible and capable of handling a wider range of patterns in the data."),
+    ]),
+    dmc.Space(h=20),
     html.Div(id="stats-forecasts-div"),
     dmc.Space(h=20),
     get_forecast_metric_cards("stats"),
-    dmc.Space(h=20),
-    dmc.Button("Complex Exponential Smoothing", id="stats-forecast-btn", n_clicks=0),
 
     dmc.Space(h=20),
     html.Hr(),
     dmc.Space(h=20),
 
     # neural
-    dmc.Button("Chronos", id="chronos-forecast-btn", n_clicks=0),
+    dmc.Group([
+        dmc.Button("Chronos", id="chronos-forecast-btn", n_clicks=0, variant="outline"),
+        dmc.Button("Info", id="chronos-info-btn", n_clicks=0, variant="outline", color="black"),
+    ]),
+    dmc.Modal(id="chronos-info-modal", title="Chronos Forecast", children=[
+        html.P("Chronos is a family of pretrained time series forecasting models developed by Amazon. "
+               "It leverages language model architectures to transform time series data into sequences of tokens, which are then processed using a language model. "
+               "This approach allows Chronos to generate probabilistic forecasts by sampling multiple future trajectories based on historical data. "
+               "Chronos has been trained on a large corpus of publicly available time series data, as well as synthetic data generated using Gaussian processes. "
+               "Its key advantage is the ability to handle diverse time series data from different domains, making it a versatile and powerful tool for time series forecasting."),
+    ]),
     dmc.Space(h=20),
     get_forecast_metric_cards("chronos"),
     dmc.Space(h=20),

@@ -125,13 +125,14 @@ def get_scatter(df:pd.DataFrame, n_daily, n_weekly, n_monthly, n_quarterly, n_ye
     else:
         pass
     fig = make_subplots(
-        rows=3,
+        rows=4,
         cols=1,
         shared_xaxes=True,
         subplot_titles=[
-            "Total Separate",
-            "Total Stacked",
-            "Total Percent Compared to Pre-Pandemic",
+            "Total",
+            "Separate",
+            "Stacked",
+            "Percent Compared to Pre-Pandemic",
         ]
     )
     mean_y = df["Subways: Total Estimated Ridership"].mean()
@@ -159,6 +160,18 @@ def get_scatter(df:pd.DataFrame, n_daily, n_weekly, n_monthly, n_quarterly, n_ye
     ])
     total_cols =  [c for c in df.columns if "Total" in c]
     pct_cols =  [c for c in df.columns if "Comparable" in c]
+    fig.add_trace(
+        go.Scatter(
+            x=df['Date'],
+            y=df[total_cols].sum(axis=1),
+            mode='lines',
+            legendgroup="total",
+            showlegend=True,
+            name="total",
+            marker_color=colors[0],
+            fill='tozeroy',
+            ), row=1, col=1
+        )
     for i,col in enumerate(total_cols):
         fig.add_trace(
             go.Scatter(
@@ -169,7 +182,7 @@ def get_scatter(df:pd.DataFrame, n_daily, n_weekly, n_monthly, n_quarterly, n_ye
                 showlegend=True,
                 name=col.split(":")[0],
                 marker_color=colors[i],
-                ), row=1, col=1
+                ), row=2, col=1
             )
     for i,col in enumerate(total_cols):
         fig.add_trace(
@@ -182,7 +195,7 @@ def get_scatter(df:pd.DataFrame, n_daily, n_weekly, n_monthly, n_quarterly, n_ye
                 name=col.split(":")[0],
                 marker_color=colors[i],
                 stackgroup="one",
-                ), row=2, col=1
+                ), row=3, col=1
             )
     for i,col in enumerate(pct_cols):
         fig.add_trace(
@@ -194,13 +207,16 @@ def get_scatter(df:pd.DataFrame, n_daily, n_weekly, n_monthly, n_quarterly, n_ye
                 showlegend=False,
                 name=col.split(":")[0],
                 marker_color=colors[i],
-                ), row=3, col=1
+                ), row=4, col=1
             )
     fig.add_trace(
         go.Scatter(
             x=df_events['Date'],
             y=df_events['y'],
             mode='markers',
+            marker_symbol='x',
+            marker_size=15,
+            marker_color='black',
             showlegend=True,
             customdata=df_events['desc'],
             hovertemplate='<b>%{x}</b><br>%{customdata}',
@@ -210,14 +226,15 @@ def get_scatter(df:pd.DataFrame, n_daily, n_weekly, n_monthly, n_quarterly, n_ye
     fig.update_xaxes(title="date", row=3, col=1)
     fig.update_yaxes(title="total ridership/trips", row=1, col=1)
     fig.update_yaxes(title="total ridership/trips", row=2, col=1)
-    fig.update_yaxes(title="% of comparable pre-pandemic day", row=3, col=1)
+    fig.update_yaxes(title="total ridership/trips", row=3, col=1)
+    fig.update_yaxes(title="% of comparable pre-pandemic day", row=4, col=1)
     fig.update_layout(
         height=1200,
         showlegend=True,
         legend=dict(
             orientation="h",
             yanchor="bottom",
-            y=-0.15,
+            y=1.07,
             xanchor="right",
             x=1
         ),
@@ -234,11 +251,11 @@ layout = html.Div([
     html.Div(id="home-stats"),
     dmc.Space(h=20),
     dmc.Flex([
-        dmc.Button("Daily", id="home-daily-btn", n_clicks=0),
-        dmc.Button("Weekly", id="home-weekly-btn", n_clicks=0),
-        dmc.Button("Monthly", id="home-monthly-btn", n_clicks=0),
-        dmc.Button("Quarterly", id="home-quarterly-btn", n_clicks=0),
-        dmc.Button("Yearly", id="home-yearly-btn", n_clicks=0),
+        dmc.Button("Daily", id="home-daily-btn", n_clicks=0, variant="outline"),
+        dmc.Button("Weekly", id="home-weekly-btn", n_clicks=0, variant="outline"),
+        dmc.Button("Monthly", id="home-monthly-btn", n_clicks=0, variant="outline"),
+        dmc.Button("Quarterly", id="home-quarterly-btn", n_clicks=0, variant="outline"),
+        dmc.Button("Yearly", id="home-yearly-btn", n_clicks=0, variant="outline"),
     ],
     gap="md",
     justify="flex-start",
