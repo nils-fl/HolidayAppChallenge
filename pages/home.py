@@ -78,22 +78,23 @@ def update_analytics_graph(df:pd.DataFrame):
     }
     docs = {k: v for k, v in sorted(docs.items(), key=lambda x: x[1][0], reverse=True)}
     cards = dmc.Flex([
-                dmc.Card(
-                    children=[
-                        dmc.Center(DashIconify(icon=f"mdi:{docs[k][1]}", height=30)),
-                        dmc.Text(k, fw=700, h=15),
-                        html.Hr(className="stats-card-hr"),
-                        dmc.Text(f"Total: {docs[k][0]:,.0f}", fw=500, h=15),
-                        dmc.Space(h=10),
-                        dmc.Text(f"Min: {docs[k][2] * 100:,.2f} %" if i>0 else "", fw=500, h=15),
-                        dmc.Space(h=10),
-                        dmc.Text(f"Max: {docs[k][3] * 100:,.2f} %" if i>0 else "", fw=500, h=15),
-                        ],
-                    className="stats-card"
-                ) for i,k in enumerate(docs.keys())
+                dmc.Card([
+                    dmc.CardSection([
+                        dmc.Center([DashIconify(icon=f"mdi:{docs[k][1]}", height=30)]),
+                        dmc.Center(dmc.Text(k, fw=700, h=15)),
+                        ]),
+                    dmc.Space(h=50),
+                    dmc.CardSection([
+                        dmc.Stack([
+                            dmc.Text(f"Total: {docs[k][0]:,.0f}", fw=500, size="sm"),
+                            dmc.Text(f"Min: {docs[k][2] * 100:,.2f} %" if i>0 else "", fw=500, size="sm"),
+                            dmc.Text(f"Max: {docs[k][3] * 100:,.2f} %" if i>0 else "", fw=500, size="sm"),
+                            ])
+                        ]),
+                ], className="stats-card") for i,k in enumerate(docs.keys()) 
             ],
             direction={"base": "column", "lg": "row"},
-            gap={"base": "sm", "sm": "md"},
+            gap={"base": "sm", "sm": "sm"},
             justify={"sm": "space-between"},
             )
     return cards

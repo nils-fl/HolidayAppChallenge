@@ -39,7 +39,7 @@ html, body {
     border-radius: 7px;
     box-shadow: 1px 1px 5px -2px rgba(149, 165, 166,1.0);
     text-align: center;
-    height: 10em;
+    padding: 2em;
     width: 100%;
 }
 
